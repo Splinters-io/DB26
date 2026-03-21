@@ -2,7 +2,7 @@
 
 **Indirect data exfiltration. Data enters as HTTP headers via TCP/HTTPS to legitimate third-party domains. Those domains process the headers, triggering UDP/DNS lookups that carry the data to the receiver. The sender never touches DNS — the third party exfiltrates the data on the sender's behalf without knowing it.**
 
-DataBouncing concept by [John Carroll](https://thecontractor.io/data-bouncing/). First tooling implementation by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
+DataBouncing created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io) — David was instrumental in the initial discovery. First tooling implementation by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
 
 ## How It Works
 
@@ -349,11 +349,9 @@ Different encryption key = different field lengths = zero cross-session pattern.
 
 ## Credits
 
-- [DataBouncing](https://databouncing.io) concept by [John Carroll](https://thecontractor.io/data-bouncing/)
+- [DataBouncing](https://databouncing.io) created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io)
 - [Original article](https://thecontractor.io/data-bouncing/) by John Carroll (The Contractor)
 - [First tooling implementation](https://github.com/N1ckDunn/DataBouncing) (Python) by Nick Dunn
-
-Shout out to Nick Dunn and Dave Mound — the DataBouncing OGs.
 
 - [Interactsh](https://github.com/projectdiscovery/interactsh) by ProjectDiscovery
 - [Subfinder](https://github.com/projectdiscovery/subfinder) by ProjectDiscovery
