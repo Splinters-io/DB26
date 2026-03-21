@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB26 — DataBouncing Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --sans: -apple-system, "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+    --mono: "JetBrains Mono", "Courier New", monospace;
+    --bg: #FFFFFF;
+    --ink: #000000;
+    --ink-mid: #555555;
+    --ink-light: #888888;
+    --ink-xlight: #BBBBBB;
+    --border: #E0E0E0;
+    --max: 1200px;
+    --red: #CC0000;
+    --green: #008800;
+  }
+  html { font-size: 13px; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── WORDMARK ── */
+  .wordmark {
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    padding: 1.5rem 3rem;
+    border-bottom: 2px solid var(--ink);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .wordmark .status {
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .wordmark .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 6px;
+    background: var(--ink-xlight);
+  }
+  .dot.live { background: var(--green); }
+
+  /* ── CONTAINER ── */
+  .container {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+
+  /* ── HERO STATS ── */
+  .hero {
+    padding: 3rem 0 2rem;
+  }
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1rem;
+  }
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0;
+  }
+  .stat-card {
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--ink);
+  }
+  .stat-card + .stat-card { border-left: none; }
+  .stat-num {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+  }
+  .stat-num.red { color: var(--red); }
+  .stat-num.green { color: var(--green); }
+  .stat-label {
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    padding: 2.5rem 0;
+    border-top: 2px solid var(--ink);
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.5625rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 1rem;
+  }
+
+  /* ── CALLBACK GRID ── */
+  .cb-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+  }
+  .cb-card {
+    padding: 1.25rem;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--ink);
+  }
+  .cb-card + .cb-card { border-left: none; }
+  .cb-num {
+    font-family: var(--mono);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.125rem;
+  }
+  .cb-label {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--ink-light);
+  }
+
+  /* ── LOG TABLE ── */
+  .log-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .log-table th {
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-align: left;
+    padding: 0.625rem 0.5rem;
+    border-bottom: 2px solid var(--ink);
+  }
+  .log-table td {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    color: var(--ink);
+    padding: 0.375rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .log-table tr:hover td { background: #f8f8f8; }
+  .log-table .mono { font-family: var(--mono); }
+  .log-table .dim { color: var(--ink-light); }
+  .log-table .hot { color: var(--red); font-weight: 700; }
+
+  /* ── SCREENS ── */
+  .screen-strip {
+    display: flex;
+    gap: 0;
+    margin-top: 1rem;
+  }
+  .screen-item {
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+  }
+  .screen-item + .screen-item { border-left: none; }
+  .screen-item.active { color: var(--ink); }
+
+  /* ── FOOTER ── */
+  .footer {
+    padding: 2rem 0;
+    border-top: 2px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 0.5625rem;
+    color: var(--ink-light);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .two-col > :first-child { border-right: none; }
+
+  .log-scroll { max-height: 320px; overflow-y: auto; }
+
+  @media (max-width: 900px) {
+    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+    .cb-grid { grid-template-columns: repeat(2, 1fr); }
+    .container { padding: 0 1.5rem; }
+    .wordmark { padding: 1rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wordmark">
+  <span>DB26 DataBouncing Operations</span>
+  <span class="status"><span class="dot" id="dot"></span><span id="statusText">CONNECTING</span></span>
+</div>
+
+<div class="container">
+
+  <!-- PROBES -->
+  <div class="hero">
+    <div class="hero-label">Probes</div>
+    <div class="stat-grid">
+      <div class="stat-card"><div class="stat-num" id="sent">—</div><div class="stat-label">Sent</div></div>
+      <div class="stat-card"><div class="stat-num" id="rps">—</div><div class="stat-label">Rate /s</div></div>
+      <div class="stat-card"><div class="stat-num" id="httpOk">—</div><div class="stat-label">HTTP OK</div></div>
+      <div class="stat-card"><div class="stat-num" id="httpsOk">—</div><div class="stat-label">HTTPS OK</div></div>
+      <div class="stat-card"><div class="stat-num red" id="errors">—</div><div class="stat-label">Errors</div></div>
+      <div class="stat-card"><div class="stat-num" id="elapsed">—</div><div class="stat-label">Elapsed</div></div>
+    </div>
+  </div>
+
+  <!-- CALLBACKS -->
+  <div class="section">
+    <div class="section-label">Callbacks</div>
+    <div class="cb-grid">
+      <div class="cb-card"><div class="cb-num" id="dns">—</div><div class="cb-label">DNS</div></div>
+      <div class="cb-card"><div class="cb-num" id="http">—</div><div class="cb-label">HTTP</div></div>
+      <div class="cb-card"><div class="cb-num" id="https">—</div><div class="cb-label">HTTPS</div></div>
+      <div class="cb-card"><div class="cb-num green" id="cands">—</div><div class="cb-label">Candidates</div></div>
+    </div>
+  </div>
+
+  <!-- TRAP -->
+  <div class="section">
+    <div class="section-label">Auth Trap</div>
+    <div class="cb-grid">
+      <div class="cb-card"><div class="cb-num" id="trapTotal">—</div><div class="cb-label">Total Requests</div></div>
+      <div class="cb-card"><div class="cb-num" id="trapExt">—</div><div class="cb-label">External Hits</div></div>
+      <div class="cb-card"><div class="cb-num red" id="trapAuth">—</div><div class="cb-label">Credentials</div></div>
+      <div class="cb-card"><div class="cb-num" id="subCount">—</div><div class="cb-label">Subfinder</div></div>
+    </div>
+  </div>
+
+  <!-- RECENT CANDIDATES + FETCHES -->
+  <div class="section">
+    <div class="two-col">
+      <div style="padding-right:1.5rem">
+        <div class="section-label">Recent Candidates</div>
+        <div class="log-scroll">
+          <table class="log-table">
+            <thead><tr><th>Domain</th><th>Header</th></tr></thead>
+            <tbody id="candTable"></tbody>
+          </table>
+        </div>
+      </div>
+      <div style="padding-left:1.5rem; border-left: 2px solid var(--ink);">
+        <div class="section-label">Tainted Fetches</div>
+        <div class="log-scroll">
+          <table class="log-table">
+            <thead><tr><th>Source</th><th>Verb</th><th>URI</th><th>Auth</th></tr></thead>
+            <tbody id="fetchTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREENS -->
+  <div class="section">
+    <div class="section-label">Screen Sessions</div>
+    <div class="screen-strip" id="screens"></div>
+  </div>
+
+  <div class="footer">DB26 DataBouncing Recruiter — yourdomain.com</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const fmt=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':String(n);
+
+function update(d){
+  const dot=$('dot');
+  const st=$('statusText');
+  if(d.running){dot.classList.add('live');st.textContent='LIVE';}
+  else{dot.classList.remove('live');st.textContent='IDLE';}
+
+  $('sent').textContent=fmt(d.probes_sent);
+  $('rps').textContent=d.rps;
+  $('httpOk').textContent=fmt(d.http_ok);
+  $('httpsOk').textContent=fmt(d.https_ok);
+  $('errors').textContent=fmt(d.errors);
+  $('elapsed').textContent=d.elapsed||'—';
+
+  $('dns').textContent=fmt(d.dns_cb);
+  $('http').textContent=fmt(d.http_cb);
+  $('https').textContent=fmt(d.https_cb);
+  $('cands').textContent=fmt(d.candidates);
+
+  $('trapTotal').textContent=fmt(d.trap_total);
+  $('trapExt').textContent=d.trap_external;
+  $('trapAuth').textContent=d.trap_auth;
+  $('subCount').textContent=fmt(d.subfinder_count);
+
+  // Candidates
+  const ct=$('candTable');
+  ct.innerHTML=(d.recent_candidates||[]).map(c=>{
+    const m=c.match(/^(.+?)\s+\[(.+)\]/);
+    if(m) return`<tr><td>${m[1]}</td><td class="dim">${m[2]}</td></tr>`;
+    return`<tr><td>${c}</td><td class="dim">—</td></tr>`;
+  }).join('');
+
+  // Fetches
+  const ft=$('fetchTable');
+  ft.innerHTML=(d.recent_fetches||[]).map(f=>{
+    const auth=f.auth?`<span class="hot">${f.auth.substring(0,20)}</span>`:'—';
+    return`<tr><td>${f.ip}</td><td>${f.method}</td><td>${f.uri}</td><td>${auth}</td></tr>`;
+  }).join('');
+
+  // Screens
+  $('screens').innerHTML=(d.screens||[]).map(s=>{
+    const active=s.includes('Detached')?'active':'';
+    const name=s.split('.')[1]?.split('\t')[0]||s;
+    return`<div class="screen-item ${active}">${name}</div>`;
+  }).join('');
+}
+
+function connect(){
+  const es=new EventSource('/api/stream');
+  es.onmessage=e=>{try{update(JSON.parse(e.data));}catch(err){}};
+  es.onerror=()=>{$('statusText').textContent='RECONNECTING';es.close();setTimeout(connect,3000);};
+}
+connect();
+</script>
+</body>
+</html>
