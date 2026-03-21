@@ -2,7 +2,7 @@
 
 **Indirect data exfiltration via HTTP header injection through third-party infrastructure.**
 
-DataBouncing created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io) — David was instrumental in the initial discovery. First tooling by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
+DataBouncing created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io) — David was instrumental in the initial discovery. First public tooling by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
 
 ---
 
@@ -249,7 +249,7 @@ See [GUIDE.md](GUIDE.md) for full setup and usage instructions.
 
 - [DataBouncing](https://databouncing.io) created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io)
 - [Original article](https://thecontractor.io/data-bouncing/) by John Carroll (The Contractor)
-- [First tooling implementation](https://github.com/N1ckDunn/DataBouncing) (Python) by Nick Dunn
+- [First public tooling implementation](https://github.com/N1ckDunn/DataBouncing) (Python) by Nick Dunn
 
 - [Interactsh](https://github.com/projectdiscovery/interactsh) by ProjectDiscovery
 - [Subfinder](https://github.com/projectdiscovery/subfinder) by ProjectDiscovery
