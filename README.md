@@ -9,30 +9,29 @@ Built on the [DataBouncing](https://databouncing.io) concept by [Nick Dunn](http
 HTTP headers like `Host`, `X-Forwarded-For`, and `Referer` are processed by web servers, proxies, CDNs, and WAFs. Many of these services resolve hostnames found in headers via DNS. DataBouncing exploits this behaviour to create an indirect data channel.
 
 ```
-                         ┌──────────────────────┐
-                         │   Third-party domain  │
-  ┌──────────┐   HTTP    │   (e.g. adobe.com)    │   ┌──────────────────┐
-  │          │ ─────────▶│                        │   │                  │
-  │  Sender  │   GET /   │ Processes Host header: │   │  Interactsh OOB  │
-  │          │   Host:   │ data.corrID.oob.domain │   │     Server       │
-  └──────────┘   X-Fwd:  │         │              │   │  (oob.yourdomain.com)   │
-                 Referer: │         │ DNS lookup   │   │                  │
-                          │         ▼              │   │                  │
-                          │  Resolves subdomain ───────▶ Captures query  │
-                          │                        │   │  with data       │
-                          └──────────────────────┘   │                  │
-                                                      │        │         │
-                                                      └────────┼─────────┘
-                                                               │
-                                                               ▼
-                                                      ┌──────────────┐
-                                                      │   Receiver    │
-                                                      │              │
-                                                      │ Reads log    │
-                                                      │ Deshuffles   │
-                                                      │ Decrypts     │
-                                                      │ Reassembles  │
-                                                      └──────────────┘
+ ┌────────────┐        ┌────────────────────┐        ┌────────────────┐
+ │            │  TCP   │  Third-party       │  UDP   │                │
+ │   Sender   │───────▶│  (e.g. adobe.com)  │───────▶│   OOB Server   │
+ │            │  HTTPS │                    │  DNS   │                │
+ └────────────┘        └────────────────────┘        └───────┬────────┘
+       │                        │                            │
+       │ GET / HTTP/1.1         │ Server processes           │ DNS query
+       │ Host: data.corr.oob   │ the Host header            │ arrives with
+       │ X-Forwarded-For: ...  │ and resolves the           │ embedded data
+       │ Referer: ...          │ hostname via DNS            │
+       │                        │                            │
+       │  Legitimate HTTPS      │  DNS lookup to             │
+       │  to a trusted domain   │  attacker-controlled       ▼
+       │                        │  nameserver          ┌────────────────┐
+       │  No DNS from sender    │                      │                │
+       │  No direct connection  │                      │   Receiver     │
+       │  to receiver           │                      │                │
+       │                        │                      │  Reads log     │
+       └────────────────────────┘                      │  Deshuffles    │
+                                                       │  Decrypts      │
+         TCP/HTTPS in ──────────▶ UDP/DNS out          │  Reassembles   │
+         Sender's traffic        Third party's traffic │  Verifies      │
+                                                       └────────────────┘
 ```
 
 **No direct connection between sender and receiver.** Data travels through legitimate internet infrastructure as normal-looking HTTP requests and DNS queries.
