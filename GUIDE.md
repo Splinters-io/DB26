@@ -5,29 +5,39 @@ Indirect data exfiltration via HTTP header injection through third-party infrast
 ## Architecture
 
 ```
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  Recruiter   │────▶│   Sender     │────▶│  Receiver    │
-│              │     │  (db26-send) │     │  (db26-recv) │
-│  Identifies  │     │              │     │              │
-│  proven      │     │  Encrypts    │     │  Collects    │
-│  domain +    │     │  Chunks      │     │  Decodes     │
-│  header      │     │  Shuffles    │     │  Reassembles │
-│  pairs       │     │  Bounces     │     │  Decrypts    │
-└─────────────┘     └──────────────┘     └─────────────┘
-       │                    │                    │
-       │                    ▼                    │
-       │            ┌──────────────┐             │
-       │            │ Third-party  │             │
-       │            │ domains      │             │
-       │            │ (bounce pts) │             │
-       │            └──────┬───────┘             │
-       │                   │ DNS                 │
-       │                   ▼                     │
-       │            ┌──────────────┐             │
-       └───────────▶│  Interactsh  │◀────────────┘
-                    │  Server      │
-                    │  (oob.yourdomain.com)│
-                    └──────────────┘
+  RECRUITER                 SENDER                  RECEIVER
+  Scans domains,            Encrypts file,          Reads DNS log,
+  finds proven              chunks into DNS         deshuffles,
+  domain + header           labels, bounces         reassembles,
+  pairs                     through candidates      decrypts, verifies
+
+  recruiter                 db26-send               db26-recv
+      |                         |                       |
+      | proven_candidates.jsonl |                       |
+      +------------------------>+                       |
+                                |                       |
+                                |   TCP/HTTPS to        |
+                                |   third-party         |
+                                |   domains             |
+                                |                       |
+                                v                       |
+                        Third-party servers             |
+                        process headers,                |
+                        trigger DNS lookups             |
+                                |                       |
+                                |   UDP/DNS with        |
+                                |   embedded data       |
+                                v                       |
+                          OOB Server                    |
+                          (interactsh)                  |
+                          captures all                  |
+                          DNS queries                   |
+                                |                       |
+                                |   interactsh.log      |
+                                +---------------------->+
+                                                        |
+                                                        v
+                                                  Reassembled file
 ```
 
 ## Quick Start
