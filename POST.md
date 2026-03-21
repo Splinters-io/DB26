@@ -2,13 +2,13 @@
 
 **Indirect data exfiltration via HTTP header injection through third-party infrastructure.**
 
-DataBouncing created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io) — David was instrumental in the initial discovery. First public tooling by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
+DataBouncing created by [John Carroll](https://thecontractor.io/data-bouncing/) and [David Mound](https://databouncing.io) - David was instrumental in the initial discovery. First public tooling by [Nick Dunn](https://github.com/N1ckDunn/DataBouncing). This is a complete Go reimplementation with significant performance and operational improvements.
 
 ---
 
 ## What is DataBouncing?
 
-DataBouncing exploits how web servers process HTTP headers. When a server receives a request with a crafted `Host`, `X-Forwarded-For`, `Referer`, or other header containing a subdomain, many servers will resolve that subdomain via DNS — creating an indirect channel for data exfiltration.
+DataBouncing exploits how web servers process HTTP headers. When a server receives a request with a crafted `Host`, `X-Forwarded-For`, `Referer`, or other header containing a subdomain, many servers will resolve that subdomain via DNS - creating an indirect channel for data exfiltration.
 
 The data never travels directly between sender and receiver. It bounces through legitimate third-party infrastructure.
 
@@ -47,7 +47,7 @@ Sender                    Third-party                 Receiver
 
 ## The Toolkit
 
-### Recruiter — Candidate Discovery
+### Recruiter - Candidate Discovery
 
 Identifies which domains process which HTTP headers, creating a map of proven bounce points.
 
@@ -87,7 +87,7 @@ Output: `databouncing_candidates.jsonl`
 {"domain":"example.com","headers":{"host":3,"xff":1},"callbacks":4}
 ```
 
-### Sender (db26-send) — Encrypted Data Transmission
+### Sender (db26-send) - Encrypted Data Transmission
 
 Takes the recruiter's proven candidates and uses them to exfiltrate data.
 
@@ -123,11 +123,11 @@ Takes the recruiter's proven candidates and uses them to exfiltrate data.
 Features:
 - AES-256-GCM encryption with Argon2id key derivation
 - Base32 encoding (RFC 4648) for DNS-safe labels
-- **Shuffled field order** — 24 permutations per query
-- **Decoy labels** — random garbage injected to defeat pattern matching
-- **Session-variable field lengths** — derived from key, change every run
-- **Multi-domain spread** — chunks distributed across multiple OOB domains
-- **Proven header routing** — only uses headers validated by the recruiter
+- **Shuffled field order** - 24 permutations per query
+- **Decoy labels** - random garbage injected to defeat pattern matching
+- **Session-variable field lengths** - derived from key, change every run
+- **Multi-domain spread** - chunks distributed across multiple OOB domains
+- **Proven header routing** - only uses headers validated by the recruiter
 - Manual target support: `-target adobe.com,host`
 - Random jitter, random candidate selection, random chunk ordering
 
@@ -136,7 +136,7 @@ Wire format (field order randomised each query):
 [fileID].[seq].[total].[base32data].[DECOY?].[corrID].[oob.domain]
 ```
 
-### Receiver (db26-recv) — Collection and Reassembly
+### Receiver (db26-recv) - Collection and Reassembly
 
 Reads the interactsh server log, deshuffles fields, reassembles the file.
 
@@ -159,8 +159,8 @@ Reads the interactsh server log, deshuffles fields, reassembles the file.
   Resolvers: 24 unique IPs
 
   Resolver Intelligence:
-    172.x.x.x — Cloudflare CDN edge, London
-    172.x.x.x — Cloudflare CDN edge, London
+    172.x.x.x - Cloudflare CDN edge, London
+    172.x.x.x - Cloudflare CDN edge, London
     ...24 Cloudflare edge nodes
 
   Status:    SUCCESS

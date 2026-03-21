@@ -55,7 +55,7 @@ recruiter \
 
 Config file provides server URL and token automatically.
 
-Output: `databouncing_candidates.jsonl` — each line:
+Output: `databouncing_candidates.jsonl` - each line:
 ```json
 {"domain":"example.com","callbacks":5,"headers":{"host":3,"xff":2}}
 ```
@@ -133,7 +133,7 @@ The recruiter validates everything before starting:
 
 ### Config File
 
-`~/.db26/config.json` — loaded automatically:
+`~/.db26/config.json` - loaded automatically:
 
 ```json
 {
@@ -180,7 +180,7 @@ Fields identified by **unique length** (session-derived):
 - `data`: 16-40 chars (base32 encoded)
 - `decoy`: random length, random chars (injected 10-30%)
 
-Field lengths derived from encryption key via Argon2id — different key = different lengths. No cross-session pattern.
+Field lengths derived from encryption key via Argon2id - different key = different lengths. No cross-session pattern.
 
 ### Anti-Detection
 
@@ -273,7 +273,7 @@ Spread traffic across multiple OOB domains:
 2. Point NS records to VPS IP (same as oob.yourdomain.com)
 3. Configure interactsh: `-domain oob.yourdomain.com,exf.other.io,dns.third.net`
 4. Sender: `-oob-domains oob.yourdomain.com,exf.other.io -corr-ids corrA,corrB`
-5. Receiver: same flags — all callbacks land in one interactsh log
+5. Receiver: same flags - all callbacks land in one interactsh log
 
 ## VPS
 
