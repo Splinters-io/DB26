@@ -10,9 +10,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
+
+	"db26/internal/paths"
 )
 
 //go:embed index.html
@@ -191,18 +194,20 @@ func parseRecruiterLog(d *DashData) {
 	logPaths := []string{}
 
 	// Check for active screen recruiter log
-	entries, _ := os.ReadDir("/root/db26/runs")
+	runsDir := paths.Runs()
+	entries, _ := os.ReadDir(runsDir)
 	for _, e := range entries {
 		if e.IsDir() {
-			p := "/root/db26/runs/" + e.Name() + "/recruiter.log"
+			p := filepath.Join(runsDir, e.Name(), "recruiter.log")
 			if _, err := os.Stat(p); err == nil {
 				logPaths = append(logPaths, p)
 			}
 		}
 	}
-	// Also check root
-	if _, err := os.Stat("/root/recruiter_run.log"); err == nil {
-		logPaths = append(logPaths, "/root/recruiter_run.log")
+	// Also check logs directory
+	legacyLog := filepath.Join(paths.Logs(), "recruiter_run.log")
+	if _, err := os.Stat(legacyLog); err == nil {
+		logPaths = append(logPaths, legacyLog)
 	}
 
 	// Use most recently modified
@@ -314,32 +319,33 @@ func max(a, b int) int {
 
 func parseTrapStats(d *DashData) {
 	// Find most recent trap captures file
-	paths := []string{}
-	entries, _ := os.ReadDir("/root/db26/runs")
-	for _, e := range entries {
+	trapPaths := []string{}
+	runsDir := paths.Runs()
+	trapEntries, _ := os.ReadDir(runsDir)
+	for _, e := range trapEntries {
 		if e.IsDir() {
-			p := "/root/db26/runs/" + e.Name() + "/trap_captures.json"
+			p := filepath.Join(runsDir, e.Name(), "trap_captures.json")
 			if _, err := os.Stat(p); err == nil {
-				paths = append(paths, p)
+				trapPaths = append(trapPaths, p)
 			}
 		}
 	}
 
-	var bestPath string
-	var bestTime time.Time
-	for _, p := range paths {
+	var bestTrapPath string
+	var bestTrapTime time.Time
+	for _, p := range trapPaths {
 		info, err := os.Stat(p)
-		if err == nil && info.ModTime().After(bestTime) {
-			bestTime = info.ModTime()
-			bestPath = p
+		if err == nil && info.ModTime().After(bestTrapTime) {
+			bestTrapTime = info.ModTime()
+			bestTrapPath = p
 		}
 	}
 
-	if bestPath == "" {
+	if bestTrapPath == "" {
 		return
 	}
 
-	f, err := os.Open(bestPath)
+	f, err := os.Open(bestTrapPath)
 	if err != nil {
 		return
 	}
@@ -397,7 +403,8 @@ func parseTrapStats(d *DashData) {
 }
 
 func parseSubfinder(d *DashData) {
-	info, err := os.Stat("/root/subdomains_all.txt")
+	subdomainsFile := filepath.Join(paths.Targets(), "subdomains_all.txt")
+	info, err := os.Stat(subdomainsFile)
 	if err != nil {
 		return
 	}
@@ -406,7 +413,7 @@ func parseSubfinder(d *DashData) {
 
 	// Get accurate count if file is small enough, otherwise estimate
 	if info.Size() < 500*1024*1024 {
-		cmd := exec.Command("wc", "-l", "/root/subdomains_all.txt")
+		cmd := exec.Command("wc", "-l", subdomainsFile)
 		out, err := cmd.Output()
 		if err == nil {
 			fmt.Sscanf(strings.TrimSpace(string(out)), "%d", &d.SubfinderCount)

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"db26/internal/paths"
 )
 
 // Config is the persistent configuration file for the DB26 recruiter.
@@ -42,9 +44,9 @@ type DepConfig struct {
 func DefaultConfig() Config {
 	return Config{
 		InteractshServer: "",
-		InteractshLog:    "/var/log/interactsh/interactsh.log",
-		RunsDir:          "/root/db26/runs",
-		BinPaths:         []string{"/root/go/bin", "/usr/local/go/bin"},
+		InteractshLog:    paths.InteractshLogFile(),
+		RunsDir:          paths.Runs(),
+		BinPaths:         paths.BinPaths(),
 		Workers:          2000,
 		RPS:              5000,
 		Timeout:          1,
@@ -120,6 +122,5 @@ func Init(path string) (string, error) {
 }
 
 func defaultPath() string {
-	home, _ := os.UserHomeDir()
-	return filepath.Join(home, ".db26", "config.json")
+	return paths.ConfigFile()
 }

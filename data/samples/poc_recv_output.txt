@@ -1,0 +1,61 @@
+
+  ██████╗ ██████╗ ██████╗  ██████╗  ██████╗ ███████╗ ██████╗██╗   ██╗
+  ██╔══██╗██╔══██╗╚════██╗██╔════╝  ██╔══██╗██╔════╝██╔════╝██║   ██║
+  ██║  ██║██████╔╝ █████╔╝███████╗  ██████╔╝█████╗  ██║     ██║   ██║
+  ██║  ██║██╔══██╗██╔═══╝ ██╔═══██╗ ██╔══██╗██╔══╝  ██║     ╚██╗ ██╔╝
+  ██████╔╝██████╔╝███████╗╚██████╔╝ ██║  ██║███████╗╚██████╗ ╚████╔╝
+  ╚═════╝ ╚═════╝ ╚══════╝ ╚═════╝  ╚═╝  ╚═╝╚══════╝ ╚═════╝  ╚═══╝
+  DataBouncing Receiver
+
+[*] Session key derived
+[*] Field lengths: fileID=5, seq=6, total=11
+[*] Correlation IDs: 1
+[*] OOB domains: [oob.dboz.uk]
+[*] Extracting file ID: e1ba
+[*] Reading log: /var/log/interactsh/interactsh.log
+[+] New file detected: e1ba (25 total chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+[+] File e1ba complete! (25/25 chunks)
+...
+  Checksum:  af850616b64645e3 (VERIFIED)
+  Output:    /root/db26/poc/received/file_e1ba.dat
+  Resolvers: 24 unique IPs
+
+  Resolver Intelligence:
+    172.70.88.194 — Cloudflare WARP (cdn) London, United Kingdom
+    172.70.160.82 — Cloudflare WARP (cdn) London, United Kingdom
+    172.71.240.83 — Cloudflare WARP (cdn) London, United Kingdom
+    172.69.193.86 — Cloudflare WARP (cdn) London, United Kingdom
+    162.158.215.83 — Cloudflare WARP (cdn) London, United Kingdom
+    172.69.193.83 — Cloudflare WARP (cdn) London, United Kingdom
+    162.158.213.80 — Cloudflare WARP (cdn) London, United Kingdom
+    141.101.70.54 — Cloudflare WARP (cdn) London, United Kingdom
+    172.71.177.82 — Cloudflare WARP (cdn) London, United Kingdom
+    172.64.193.82 — Cloudflare WARP (cdn) London, United Kingdom
+    162.158.215.82 — Cloudflare WARP (cdn) London, United Kingdom
+    172.70.88.193 — Cloudflare WARP (cdn) London, United Kingdom
+    198.41.226.12 — Cloudflare WARP (cdn) London, United Kingdom
+    172.70.160.81 — Cloudflare WARP (cdn) London, United Kingdom
+    172.70.88.36 — Cloudflare WARP (cdn) London, United Kingdom
+    162.158.199.81 — Cloudflare WARP (cdn) London, United Kingdom
+    162.158.213.79 — Cloudflare WARP (cdn) London, United Kingdom
+    172.70.84.33 — Cloudflare WARP (cdn) London, United Kingdom
+    162.158.199.82 — Cloudflare WARP (cdn) London, United Kingdom
+    172.69.193.87 — Cloudflare WARP (cdn) London, United Kingdom
+    172.70.160.83 — Cloudflare WARP (cdn) London, United Kingdom
+    198.41.226.13 — Cloudflare WARP (cdn) London, United Kingdom
+    172.64.193.81 — Cloudflare WARP (cdn) London, United Kingdom
+    141.101.70.55 — Cloudflare WARP (cdn) London, United Kingdom
+  Status:    SUCCESS

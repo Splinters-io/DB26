@@ -19,6 +19,7 @@ import (
 	"db26/internal/logparser"
 	"db26/internal/metrics"
 	"db26/internal/output"
+	"db26/internal/paths"
 	"db26/internal/preflight"
 	"db26/internal/probe"
 	"db26/internal/runconfig"
@@ -27,7 +28,7 @@ import (
 	interactsh "github.com/projectdiscovery/interactsh/pkg/client"
 )
 
-const defaultLogPath = "/var/log/interactsh/interactsh.log"
+var defaultLogPath = paths.InteractshLogFile()
 
 func main() {
 	fmt.Println()
@@ -414,8 +415,8 @@ func generateReports(logPath, reportDir, corrID string, snap metrics.Snapshot, p
 		// Try common locations
 		candidates := []string{
 			filepath.Join(reportDir, "trap_captures.json"),
-			"/root/ntlm_captures_subs.json",
-			"/root/basic_captures.json",
+			filepath.Join(paths.Logs(), "ntlm_captures_subs.json"),
+			filepath.Join(paths.Logs(), "basic_captures.json"),
 		}
 		for _, p := range candidates {
 			if _, err := os.Stat(p); err == nil {

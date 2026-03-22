@@ -1,0 +1,217 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DB26_BASE="/opt/db26"
+BIN="$DB26_BASE/bin"
+ETC="$DB26_BASE/etc"
+LOGS="$DB26_BASE/logs"
+RUNS="$DB26_BASE/runs"
+DATA="$DB26_BASE/data"
+
+usage() {
+    cat <<EOF
+db26-ctl - DB26 DataBouncing Toolkit Management
+
+Usage: db26-ctl <command>
+
+Commands:
+  status          Show running services and disk usage
+  start-all       Start interactsh + dashboard
+  start-ish       Start interactsh-server
+  start-dash      Start dashboard (screen session)
+  stop-all        Stop all DB26 screen sessions
+  screens         List active screen sessions
+  runs            List campaign runs with stats
+  last-run        Show details of the most recent run
+  logs [service]  Tail logs (interactsh|responder|subfinder)
+  disk            Show disk usage breakdown
+  deploy          Cross-compile and upload new binaries from local
+  tree            Show directory layout
+  help            Show this help
+
+Paths:
+  Base:       $DB26_BASE
+  Binaries:   $BIN
+  Config:     $ETC/config.json
+  Runs:       $RUNS
+  Logs:       $LOGS
+  Data:       $DATA
+EOF
+}
+
+cmd_status() {
+    echo "=== DB26 Status ==="
+    echo
+    echo "Services:"
+    for s in interactsh recruiter responder dashboard subfinder; do
+        if screen -ls 2>/dev/null | grep -q "$s"; then
+            printf "  %-16s \033[32mRUNNING\033[0m\n" "$s"
+        else
+            printf "  %-16s \033[90mstopped\033[0m\n" "$s"
+        fi
+    done
+    echo
+    echo "Disk:"
+    printf "  %-20s %s\n" "Total" "$(du -sh $DB26_BASE 2>/dev/null | cut -f1)"
+    printf "  %-20s %s\n" "Runs" "$(du -sh $RUNS 2>/dev/null | cut -f1)"
+    printf "  %-20s %s\n" "Logs" "$(du -sh $LOGS 2>/dev/null | cut -f1)"
+    printf "  %-20s %s\n" "Data/targets" "$(du -sh $DATA/targets 2>/dev/null | cut -f1)"
+    printf "  %-20s %s\n" "Data/candidates" "$(du -sh $DATA/candidates 2>/dev/null | cut -f1)"
+    echo
+    echo "Runs: $(ls -1d $RUNS/*/ 2>/dev/null | wc -l) campaigns"
+    latest=$(ls -1td $RUNS/*/ 2>/dev/null | head -1)
+    if [ -n "$latest" ]; then
+        echo "Latest: $(basename "$latest")"
+        if [ -f "$latest/summary.json" ]; then
+            python3 -m json.tool "$latest/summary.json" 2>/dev/null | head -10
+        fi
+    fi
+}
+
+cmd_screens() {
+    screen -ls 2>&1 || true
+}
+
+cmd_start_all() {
+    cmd_start_ish
+    sleep 2
+    cmd_start_dash
+    echo "[*] All services started"
+}
+
+cmd_start_ish() {
+    bash "$ETC/start-interactsh.sh"
+}
+
+cmd_start_dash() {
+    screen -X -S dashboard quit 2>/dev/null || true
+    screen -dmS dashboard bash "$ETC/start-dashboard.sh"
+    echo "[*] Dashboard started in screen session: dashboard"
+    local ip
+    ip=$(hostname -I 2>/dev/null | awk '{print $1}')
+    echo "[*] Access: ssh -L 8888:127.0.0.1:8888 root@${ip}"
+    echo "[*] Then open: http://localhost:8888"
+}
+
+cmd_stop_all() {
+    for s in interactsh recruiter responder dashboard subfinder; do
+        screen -X -S "$s" quit 2>/dev/null && echo "[*] Stopped $s" || true
+    done
+}
+
+cmd_runs() {
+    echo "=== Campaign Runs ==="
+    echo
+    printf "%-36s %10s %10s %s\n" "RUN" "CANDIDATES" "SIZE" "SUMMARY"
+    echo "-------------------------------------------------------------------------------------"
+    for d in "$RUNS"/*/; do
+        [ -d "$d" ] || continue
+        name=$(basename "$d")
+        size=$(du -sh "$d" 2>/dev/null | cut -f1)
+        candidates=""
+        if [ -f "$d/databouncing_candidates.jsonl" ]; then
+            candidates=$(wc -l < "$d/databouncing_candidates.jsonl" 2>/dev/null | tr -d ' ')
+        fi
+        summary=""
+        if [ -f "$d/summary.json" ]; then
+            summary=$(python3 -c "
+import json, sys
+try:
+    d=json.load(open('${d}summary.json'))
+    print(f\"probes={d.get('probes_sent',0)} dns={d.get('dns_callbacks',0)}\")
+except: pass
+" 2>/dev/null)
+        fi
+        printf "%-36s %10s %10s %s\n" "$name" "$candidates" "$size" "$summary"
+    done
+}
+
+cmd_last_run() {
+    latest=$(ls -1td $RUNS/*/ 2>/dev/null | head -1)
+    if [ -z "$latest" ]; then
+        echo "No runs found."
+        return
+    fi
+    echo "=== Latest Run: $(basename "$latest") ==="
+    echo
+    ls -lh "$latest"
+    echo
+    if [ -f "$latest/summary.json" ]; then
+        echo "Summary:"
+        python3 -m json.tool "$latest/summary.json" 2>/dev/null || cat "$latest/summary.json"
+    fi
+}
+
+cmd_logs() {
+    local service="${1:-interactsh}"
+    case "$service" in
+        interactsh|ish)
+            latest=$(ls -1t $LOGS/interactsh/screen_* 2>/dev/null | head -1)
+            if [ -n "$latest" ]; then
+                tail -f "$latest"
+            else
+                echo "No interactsh logs found"
+            fi
+            ;;
+        responder)
+            if [ -f "$LOGS/responder/responder.log" ]; then
+                tail -f "$LOGS/responder/responder.log"
+            else
+                echo "No responder logs"
+            fi
+            ;;
+        subfinder)
+            if [ -f "$LOGS/subfinder.log" ]; then
+                tail -f "$LOGS/subfinder.log"
+            else
+                echo "No subfinder logs"
+            fi
+            ;;
+        *)
+            echo "Unknown service: $service (try: interactsh, responder, subfinder)"
+            ;;
+    esac
+}
+
+cmd_disk() {
+    echo "=== Disk Usage ==="
+    du -sh "$DB26_BASE"/*/ 2>/dev/null | sort -rh
+    echo
+    echo "=== Largest Files ==="
+    find "$DB26_BASE" -type f -size +50M -exec ls -lh {} \; 2>/dev/null | awk '{print $5, $NF}' | sort -rh | head -20
+}
+
+cmd_tree() {
+    cat <<EOF
+/opt/db26/
+├── bin/              Compiled tools (recruiter, db26-send, db26-recv, ...)
+├── etc/              Config files and service start scripts
+├── data/
+│   ├── targets/      Subdomain lists, domain files
+│   ├── candidates/   Proven domain+header pairs from recruiter
+│   └── received/     Reassembled exfiltrated files
+├── runs/             Campaign run directories (timestamped)
+├── logs/
+│   ├── interactsh/   OOB server logs
+│   ├── responder/    Responder hit logs
+│   └── archive/      Old logs from previous runs
+├── poc/              Proof-of-concept test data
+└── tmp/              Scratch files
+EOF
+}
+
+case "${1:-help}" in
+    status)     cmd_status ;;
+    start-all)  cmd_start_all ;;
+    start-ish)  cmd_start_ish ;;
+    start-dash) cmd_start_dash ;;
+    stop-all)   cmd_stop_all ;;
+    screens)    cmd_screens ;;
+    runs)       cmd_runs ;;
+    last-run)   cmd_last_run ;;
+    logs)       cmd_logs "${2:-}" ;;
+    disk)       cmd_disk ;;
+    tree)       cmd_tree ;;
+    help|--help|-h) usage ;;
+    *)          echo "Unknown command: $1"; usage ;;
+esac

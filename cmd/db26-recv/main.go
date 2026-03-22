@@ -12,6 +12,7 @@ import (
 
 	dbcrypto "db26/internal/crypto"
 	"db26/internal/intel"
+	"db26/internal/paths"
 	"db26/internal/wire"
 )
 
@@ -45,7 +46,7 @@ func main() {
 		enrichIPs    bool
 	)
 
-	flag.StringVar(&logPath, "log", "/var/log/interactsh/interactsh.log", "Interactsh server log")
+	flag.StringVar(&logPath, "log", paths.InteractshLogFile(), "Interactsh server log")
 	flag.StringVar(&passphrase, "passphrase", "", "Decryption passphrase (required)")
 	flag.StringVar(&salt, "salt", "", "Session salt hex (required)")
 	flag.StringVar(&fileIDHex, "file-id", "", "File ID hex to extract (optional — extracts all if empty)")

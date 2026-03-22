@@ -16,6 +16,7 @@ import (
 	"sync"
 	"time"
 
+	"db26/internal/paths"
 	"db26/internal/payloads"
 )
 
@@ -63,7 +64,7 @@ var (
 )
 
 func main() {
-	outDir := "/root/db26/responder"
+	outDir := paths.Responder()
 	if len(os.Args) > 1 {
 		outDir = os.Args[1]
 	}
@@ -106,7 +107,7 @@ func main() {
 	}()
 
 	// HTTPS :443
-	certDir := "/root/.local/share/certmagic/certificates/acme-v02.api.letsencrypt.org-directory"
+	certDir := paths.CertDir()
 	certFile, keyFile := findCert(certDir)
 	if certFile != "" {
 		fmt.Printf("[*] Responder HTTPS :443\n")
@@ -531,13 +532,14 @@ func extractIP(addr string) string {
 
 func loadCorrelationIDs() map[string]bool {
 	ids := make(map[string]bool)
-	entries, _ := os.ReadDir("/root/db26/runs")
+	runsDir := paths.Runs()
+	entries, _ := os.ReadDir(runsDir)
 	for _, e := range entries {
 		if !e.IsDir() {
 			continue
 		}
 		// From correlation_id file
-		data, err := os.ReadFile("/root/db26/runs/" + e.Name() + "/correlation_id")
+		data, err := os.ReadFile(filepath.Join(runsDir, e.Name(), "correlation_id"))
 		if err == nil {
 			cid := strings.TrimSpace(string(data))
 			if cid != "" {

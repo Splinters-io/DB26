@@ -1,0 +1,126 @@
+--- 20260319_193313_ntlm_subs_fresh
+{
+  "correlation_id": "d6u4uv5mnc37h3gdelagebspqyj3giyo8",
+  "duration": "1h41m25s",
+  "probes_sent": 4249604,
+  "rps": 698.3421726344824,
+  "http_ok": 463858,
+  "https_ok": 141346,
+  "errors": 3644400,
+  "dns_callbacks": 18645508,
+  "http_callbacks": 0,
+  "https_callbacks": 0,
+  "candidates": 2205088,
+  "auth_total": 605204,
+  "auth_ntlm": 605204,
+  "auth_basic": 0,
+  "auth_negotiate": 0
+}
+--- 20260320_073116_basic_subs_fresh
+{
+  "correlation_id": "d6uffhlmnc3cm1ukie10ufsdx7qnykftr",
+  "duration": "1h39m5s",
+  "probes_sent": 4249604,
+  "rps": 714.7036336919851,
+  "http_ok": 476265,
+  "https_ok": 141111,
+  "errors": 3632228,
+  "dns_callbacks": 18834431,
+  "http_callbacks": 0,
+  "https_callbacks": 0,
+  "candidates": 2204524,
+  "auth_total": 617376,
+  "auth_ntlm": 0,
+  "auth_basic": 617376,
+  "auth_negotiate": 0
+}
+--- 20260320_105642_ntlm_delta3
+{
+  "correlation_id": "d6uifrdmnc3ent5sj2s0gs4rw6ysw3d7h",
+  "duration": "2h23m39s",
+  "probes_sent": 6170274,
+  "rps": 715.8262350275307,
+  "http_ok": 653158,
+  "https_ok": 192194,
+  "errors": 5324922,
+  "dns_callbacks": 28074251,
+  "http_callbacks": 0,
+  "https_callbacks": 0,
+  "candidates": 3225991,
+  "auth_total": 845352,
+  "auth_ntlm": 845352,
+  "auth_basic": 0,
+  "auth_negotiate": 0
+}
+--- 20260320_141152_basic_delta3
+{
+  "correlation_id": "d6ulbatmnc38br1pfv4gf4fnpz19c8ghx",
+  "duration": "2h24m41s",
+  "probes_sent": 6170274,
+  "rps": 710.7027699194647,
+  "http_ok": 623696,
+  "https_ok": 185524,
+  "errors": 5361054,
+  "dns_callbacks": 28125399,
+  "http_callbacks": 0,
+  "https_callbacks": 0,
+  "candidates": 3224617,
+  "auth_total": 809220,
+  "auth_ntlm": 0,
+  "auth_basic": 809220,
+  "auth_negotiate": 0
+}
+--- 20260321_095534_responder_delta4
+{
+  "correlation_id": "d6v6m6dmnc34f5u7ebbgd441yjbrd843h",
+  "duration": "3h0m15s",
+  "probes_sent": 7788112,
+  "rps": 720.0985377572771,
+  "http_ok": 845440,
+  "https_ok": 238059,
+  "errors": 6704613,
+  "dns_callbacks": 34635652,
+  "http_callbacks": 0,
+  "https_callbacks": 0,
+  "candidates": 4064030,
+  "auth_total": 1083499,
+  "auth_ntlm": 1083499,
+  "auth_basic": 0,
+  "auth_negotiate": 0
+}
+--- 20260321_154804_final_corpus
+{
+  "correlation_id": "d6vbrktmnc35t2q493k05n5zkwts8w8mi",
+  "duration": "34m49s",
+  "probes_sent": 1354042,
+  "rps": 647.9723919474018,
+  "http_ok": 138224,
+  "https_ok": 49780,
+  "errors": 1166038,
+  "dns_callbacks": 5405067,
+  "http_callbacks": 138214,
+  "https_callbacks": 49776,
+  "candidates": 674627,
+  "auth_total": 0,
+  "auth_ntlm": 0,
+  "auth_basic": 0,
+  "auth_negotiate": 0
+}
+--- quick_prove
+{
+  "correlation_id": "d6vbk75mnc35l0agohv0z8brqbwgiojxr",
+  "duration": "21s",
+  "probes_sent": 1000,
+  "rps": 46.801730602232055,
+  "http_ok": 0,
+  "https_ok": 0,
+  "errors": 1000,
+  "dns_callbacks": 12116,
+  "http_callbacks": 0,
+  "https_callbacks": 0,
+  "candidates": 1023,
+  "auth_total": 0,
+  "auth_ntlm": 0,
+  "auth_basic": 0,
+  "auth_negotiate": 0
+}
